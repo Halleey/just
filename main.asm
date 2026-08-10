@@ -10,6 +10,7 @@ message2 db "I hate this, but let's talk about this crap, right? ", 10
 length2 equ $ - message2
 
 
+
 ;I think I'll explain the rest more later
 section .text
 global _start
