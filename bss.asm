@@ -1,4 +1,3 @@
-```asm
 ; well, here we are going to learn about section .bss
 ; a simple example, so even a stupid person can learn this
 
