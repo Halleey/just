@@ -42,6 +42,10 @@ eight_bytes resq 1
 
 array resb 6
 
+;temporary buffer to convert number into ascii 
+buffer resb 21
+
+
 section .text
 
 global _start
@@ -73,6 +77,30 @@ _start:
     ; Here we store a much larger number.
 
     mov qword [eight_bytes], 123456789
+
+
+    ; well, print a ascii is very simple, right ? see
+
+    mov rax, 1         
+    mov rdi, 1          
+    mov rsi, one_byte   
+    mov rdx, 1    
+    syscall
+
+
+    ;we talk about LEA in the future 
+    mov al, [one_byte]
+    mov [buffer], al
+    mov byte [buffer + 1], 10 ;breakline
+    mov rax, 1
+    mov rdi, 1
+    lea rsi, [buffer]
+    mov rdx, 2 ;a char + \n
+    syscall
+
+    ;but if we want to print numbers ? real numbers in the program, how to make this?
+
+
 
 
     ;  AN ARRAY

@@ -2,3 +2,5 @@ main
 main.o
 bss
 bss.o
+variables
+variables.o
