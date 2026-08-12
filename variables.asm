@@ -13,6 +13,8 @@
 
 ; It does not give that memory an initial value.
 
+default rel             ; avoid warning about absolute address in x86-64
+
 section .bss
 
 ; Reserve one byte.
@@ -88,19 +90,69 @@ _start:
     syscall
 
 
-    ;we talk about LEA in the future 
-    mov al, [one_byte]
-    mov [buffer], al
-    mov byte [buffer + 1], 10 ;breakline
-    mov rax, 1
-    mov rdi, 1
-    lea rsi, [buffer]
-    mov rdx, 2 ;a char + \n
-    syscall
+    ;we will  talk about LEA in the future 
+    mov al, [one_byte]          ; Copy the CONTENT of 'one_byte' ('A') into the AL register
+    mov [buffer], al            ; Copy the 'A' character from AL into the first position of the buffer
+    mov byte [buffer + 1], 10   ; Put a newline (\n) in the second position of the buffer
 
-    ;but if we want to print numbers ? real numbers in the program, how to make this?
+    ;fuck, we already know what this does.
+    mov rax, 1                 
+    mov rdi, 1                  
 
+; HOW THE FUCK DOES LEA WORK?
+; The 'sys_write' syscall expects RSI to contain the ADDRESS
+; of the memory where the message starts.
 
+; It does NOT want the actual contents of the buffer.
+
+; So if we did:
+
+;     mov rsi, [buffer]
+
+; the CPU would READ the contents stored inside 'buffer'.
+
+; Our buffer currently contains:
+
+;     'A' + '\n'
+
+; In memory, that's basically:
+
+;     41 0A
+
+; So RSI would end up containing something like 0x0A41
+; instead of the fucking address of the buffer.
+
+; Then sys_write would treat 0x0A41 as a memory address
+; and try to read from there.
+
+; And guess what?
+; nuclear bomb. Segmentation fault
+;
+; This is where LEA (Load Effective Address) becomes useful.
+;
+; LEA evaluates the memory expression [buffer], but DOES NOT
+; read the data stored there.
+;
+; Instead, it calculates the ADDRESS of 'buffer' and puts
+; that address into RSI.
+;
+; In other words:
+;
+;     mov rsi, [buffer]   -> "Give me what's INSIDE buffer."
+;
+;     lea rsi, [buffer]   -> "Give me WHERE buffer IS."
+;
+; That's the important difference:
+;
+;     [] with MOV  -> access the CONTENT
+;     LEA          -> calculate the ADDRESS
+;
+; So RSI now contains a pointer to the beginning of our buffer.
+
+    lea rsi, [buffer]           ; Load the ADDRESS of buffer into RSI
+
+    mov rdx, 2                  
+    syscall                                
 
 
     ;  AN ARRAY
