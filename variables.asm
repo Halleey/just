@@ -66,6 +66,7 @@ _start:
 
     mov word [two_bytes], 500
 
+
     ;four BYTES
 
     ; A DWORD is 4 bytes
@@ -268,16 +269,12 @@ _start:
 
     ; Print the array
 
-
     mov rax, 1              ; syscall write
     mov rdi, 1              ; stdout 
     lea rsi, [rel array]    ; address of our message
     mov rdx, 6              ; number of bytes
     syscall
 
-
-
     mov rax, 60            
     mov rdi, 0           
     syscall
-
